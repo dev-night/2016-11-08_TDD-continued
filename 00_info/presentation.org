@@ -1,0 +1,304 @@
+#+Title: TDD cont'd
+#+Author: Stefan Siegl
+#+Email: stefan.siegl@tradebyte.com
+#+Date: 2016-11-08
+
+#+OPTIONS: reveal_center:t reveal_progress:t reveal_history:t reveal_control:t
+#+OPTIONS: reveal_rolling_links:t reveal_keyboard:t reveal_overview:t num:nil
+#+OPTIONS: toc:0
+#+OPTIONS: reveal_slide_number:nil
+#+OPTIONS: reveal_title_slide:"<h1>%t</h1><h2>%a</h2><p>%e</p>"
+#+OPTIONS: reveal_width:1200 reveal_height:800
+#+OPTIONS: ^:nil
+#+REVEAL_MARGIN: 0.1
+#+REVEAL_MIN_SCALE: 0.5
+#+REVEAL_MAX_SCALE: 2.5
+#+REVEAL_THEME: white
+#+REVEAL_HLEVEL: 1
+#+REVEAL_PLUGINS: (markdown notes)
+#+REVEAL_EXTRA_CSS: custom.css
+
+*   
+
+[[./images/dev_night-logo.png]]
+
+* Agenda
+
+- Global Game Jam
+- Recap letztes mal
+  - Arrange, Act, Assert
+  - Red, Green, Refactor
+  - Baby Steps
+- Challenge: Pig Latin mit Baby Steps
+
+- Mocking, WTH?
+- Challenge: Mocking
+
+* Global Game Jam
+
+** Game Jam, WTH?
+
+- Jam Session (nix Marmelade ... eher wie Musiker)
+- zwangloses Beisammensein von Musi^WEntwicklern
+- Ziel ist es in Gruppen {Video,Brett,Karten}-Spiele zu erstellen
+- die Spiele sollen klein, aber innovativ sein
+- gemeinsam Rapid Prototyping üben und gemeinsam Erfahrung sammeln
+
+** Global Game Jam
+
+- der *Global Game Jam* ist eine weltweite Bewegung, an der sich überall
+  auf der Welt verteilt Entwickler zusammen finden, um eben pro Gruppe
+  ein Spiel (fertig) zu entwickeln
+- zeitlicher Rahmen: 48h full-time rumnerden
+- aktuell 110 Jam Sites registriert
+- Save the date: (Fr) 20. Januar 17:00 bis (So) 22. Januar 2017
+
+** und nu?
+
+- naja, wir sind noch nicht dabei
+- aber wär' doch vielleicht ganz witzig!?
+
+* Test Driven Development
+
+** Recap
+
+- Danke nochmal an Matthias!
+- TDD hilft, weil
+  - keiner von uns arbeitet fehlerfrei
+  - wir ein tieferes Verständnis über die Domäne entwickeln
+  - dabei testbarer Code entsteht
+  - wir refactorn können, ohne Angst zu haben
+  - Features sind gewährleistet ("das hat doch schon funktioniert")
+- "test first", weil "later equals never"
+- Ausreden gibt es keine :)
+
+
+** Arrange, Act, Assert
+
+- jeder Test sollte diesem Dreischritt folgen
+  - Ausgangsbedingungen schaffen (Objekte instantiieren, Mocks anlegen)
+  - die zu testende Aktion durchführen
+  - das Ergebnis davon überprüfen
+- daraus folgt auch, dass jeder Test nur eine Aktion/Sache testet
+- das muss nicht heißen, dass im Test nur einmal "assert" stehen darf
+
+** Red, Green, Refactor
+
+- wir schreiben einen (weiteren) Test
+- nachdem die Implementierung fehlt, müssen die Tests nun auf rot laufen!
+  (Tests immer ausführen; Keyboard-Shortcuts verwenden)
+- wenn Tests rot sind, dann (minimale) Implementierung schreiben
+- Tests ausführen - Ziel: grün!
+- [wenn nötig] jetzt refactorn, Redundanzen entfernen usf.
+- dabei sollten die Tests möglichst nicht (nur kurz) rot sein
+- anschließend Tests ausführen - Ziel: immer noch grün!
+- wenn verlaufen: abbrechen, git reset --hard
+- GOTO 1
+
+** Baby Steps
+
+- die Idee von TDD ist in kleinen Inkrementen zu arbeiten
+- also nur ein Test, der die Implementierung einen kleinen Schritt in die richtige Richtung treibt
+- ... und die Implementierung dazu
+- 5 Minuten sind gut, nicht mehr als 10
+- halbe Stunde oberflächlich Tests schreiben, eine Stunde hacken und dann 3 Stunden debuggen ist nicht TDD!
+
+* Challenge 1: Pig Latin (again)
+
+- Arbeitet in Pairs (ggf. zu dritt)
+- Arbeitet test driven
+- Committed nach jedem kleinen Schritt
+- Constraint: Baby Steps
+- Navigator achtet darauf, dass Tests spätestens nach 120 Sekunden wieder grün sind
+  - sonst: git reset --hard
+  - Iteration normal: 1 Test + Implementierung
+  - Alternativ: Refactoring
+  - danach Stoppuhr resetten und von vorn
+  - driver & navigator wechseln dabei die Rollen
+
+** Pig Latin, WTH?
+
+- (Kinder)Spiel in englischer Sprache
+- Worte/Sätze umformen; "a yellow bird" -> "aay ellowyay irdbay"
+- Regeln:
+  - Vokal am Anfang -> "ay" anfügen
+  - Konsonant am Anfang zuerst nach hinten schieben, dann "ay" anfügen
+  - "ch", "qu", "th", "thr" und "sch" gelten als ein Konsonant (und werden zusammen verschoben)
+  - beliebiger Konsonant + "qu" gilt ebenfalls als Cluster und wird gemeinsam verschoben
+  - "xr" und "yt" wie Vokal behandeln
+
+* Mocking
+
+** Begrifflichkeiten
+
+Beim Unit Testing sollen Abhängigkeiten durch ein Testdouble ersetzt werden, u.a.
+
+- Dummy Object - tut gar nichts, z.B. Auffüllen von Parameterlisten
+- Fake Object - eine echte Implementierung, die aber Abkürzungen nimmt (und deswegen nicht für Produktion taugt)
+- Stub - dem Original nachempfunden, jedoch keine Logik, liefert vorkonfigurierte Rückgabewerte
+- Mock - stärker ausprogrammiertes Double, die u.a. Erwartungen prüfen und stark mit dem SUT interagieren
+
+Die Grenzen sind teilweise aber verschwimmend.
+
+** Testbarer Code
+
+Um in einem Test die Abhängigkeiten ersetzen zu können, muss die Implementierung das aber "unterstützen".
+Ziemlich blöd ist ein SUT, das u.a. ...
+
+- statische Methodenaufrufe macht
+- z.B. im Konstruktor selbst Abhängigkeiten initialisiert
+- u.U. wenn die Methode selbst Objekte erstellt, die dann zurückgegeben werden
+- Aufrufe von (PHP) Funktionen, die Seiteneffekte haben
+  - (Bildschirm) Ein-/Ausgabe
+  - Interaktion mit dem Dateisystem
+  - Netzwerk Zugriffe usf.
+
+** Bsp. statischer Aufruf
+
+#+BEGIN_SRC php
+final class CurrencyCalculator
+{
+  public function convert($amount, $fromCurrency, $date)
+  {
+    $rate = CurrencyRateService::getRate($fromCurrency, $date);
+    return $amount / $rate;
+  }
+}
+#+END_SRC
+
+- wenn CurrencyRateService hier eine API aufruft, hängt der Test von dem externen System ab
+- der Test kann die Klasse CurrencyRateService nicht "ersetzen"
+
+** Bsp. Abhängigkeit im Konstruktor
+
+#+BEGIN_SRC php
+final class CurrencyCalculator
+{
+  private $rateService;
+
+  public function __construct()
+  {
+    $this->rateService = new CurrencyRateService();
+  }
+
+  public function convert($amount, $fromCurrency, $date)
+  {
+    $rate = $this->rateService->getRate($fromCurrency, $date);
+    return $amount / $rate;
+  }
+}
+#+END_SRC
+
+- jetzt ist zwar der statische Aufruf weg, aber helfen tut das trotzdem nicht :-)
+
+** besser ... Dependency Injection
+
+#+BEGIN_SRC php
+final class CurrencyCalculator
+{
+  private $rateService;
+
+  public function __construct(CurrencyRateService $rateService)
+  {
+    $this->rateService = $rateService;
+  }
+
+  public function convert($amount, $fromCurrency, $date)
+  {
+    $rate = $this->rateService->getRate($fromCurrency, $date);
+    return $amount / $rate;
+  }
+}
+#+END_SRC
+
+- jetzt kann man das auch testen :)
+- wir erstellen einen Stub (oder Mock), der einen Wechselkurs liefert und wir können sehen ob convert richtig rechnet
+
+** Bsp. Funktionen mit Seiteneffekten
+
+#+BEGIN_SRC php
+final class CurrencyRateService
+{
+  const API_URL = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml";
+
+  public function getRate($currency, $date)
+  {
+    $xmlContent = file_get_contents(static::$API_URL);
+    $xml = simplexml_load_string($xmlContent);
+
+    $currency = addcslashes($currency, "'");
+    $date = addcslashes($date, "'");
+
+    $xpath = "//Cube[time='$date']/Cube[currency='$currency']";
+    return (float) $xml->xpath($xpath)->attributes()->rate;
+  }
+}
+#+END_SRC
+
+- zum Testen stört aber insb. das file_get_contents
+- Lösung: HttpClient Service injecten
+
+** Wie bekomme ich jetzt einen Stub?
+
+hängt vom Mocking Framework, bzw. Test Runner ab. In PHPUnit (u.a.) so:
+
+#+BEGIN_SRC php
+final class CurrencyCalculatorTest extends PHPUnit_Framework_TestCase
+{
+  public function test_convert()
+  {
+    $rateService = $this->getMock(CurrencyRateService::class);
+    // oder: $this->getMockBuilder(CurrencyRateService::class)->getMock();
+
+    $rateService->method('getRate')
+                ->willReturn(1.20);
+
+    $calculator = new CurrencyCalculator($rateService);
+    $result = $calculator->convert(96, 'GBP', '2016-09-25');
+
+    $this->assertEquals(80, $result);
+  }
+}
+#+END_SRC
+
+** oder als Mock?
+
+#+BEGIN_SRC php
+final class CurrencyCalculatorTest extends PHPUnit_Framework_TestCase
+{
+  public function test_convert()
+  {
+    $rateService = $this->getMock(CurrencyRateService::class);
+    // oder: $this->getMockBuilder(CurrencyRateService::class)->getMock();
+
+    $rateService->expects($this->once())
+                ->method('getRate')
+                ->with($this->equalTo('GBP'), $this->equalTo('2016-09-25'))
+                ->willReturn(1.20);
+
+    $calculator = new CurrencyCalculator($rateService);
+    $result = $calculator->convert(96, 'GBP', '2016-09-25');
+
+    $this->assertEquals(80, $result);
+  }
+}
+#+END_SRC
+
+
+* Challenge 2: Currency Calculator
+
+- Arbeitet wieder in Pairs (ggf. zu dritt)
+- ... bildet möglichst andere Paare
+- Arbeitet test driven
+- objektorientiert
+- Mock everything, decouple everything
+
+** User Story
+
+- kleine Command Line Applikation, die Beträge aus Fremdwährungen in Euro konvertiert
+- Parameter: Betrag, Währungskürzel und Datum (innerhalb der letzten 90 Tage)
+- Wechselkurse gibt's hier: http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml
+- Architektur mindestens:
+  - CurrencyCalculator
+  - CurrencyRateService
+  - HttpClient

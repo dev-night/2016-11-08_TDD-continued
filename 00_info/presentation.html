@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>TDD cont'd</title>
+<meta name="author" content="(Stefan Siegl)"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="./reveal.js/css/reveal.css"/>
+
+<link rel="stylesheet" href="./reveal.js/css/theme/white.css" id="theme"/>
+
+<link rel="stylesheet" href="custom.css"/>
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = './reveal.js/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide"><h1>TDD cont'd</h1><h2>Stefan Siegl</h2><p><a href="mailto:stefan.siegl@tradebyte.com">stefan.siegl@tradebyte.com</a></p>
+</section>
+
+<section>
+<section id="slide-org162f20b">
+<h2 id="org162f20b"></h2>
+
+<div class="figure">
+<p><img src="./images/dev_night-logo.png" alt="dev_night-logo.png" />
+</p>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-org0bafe3c">
+<h2 id="org0bafe3c">Agenda</h2>
+<ul>
+<li>Global Game Jam</li>
+<li>Recap letztes mal
+<ul>
+<li>Arrange, Act, Assert</li>
+<li>Red, Green, Refactor</li>
+<li>Baby Steps</li>
+
+</ul></li>
+<li>Challenge: Pig Latin mit Baby Steps</li>
+
+<li>Mocking, WTH?</li>
+<li>Challenge: Mocking</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org3373b13">
+<h2 id="org3373b13">Global Game Jam</h2>
+<div class="outline-text-2" id="text-org3373b13">
+</div></section>
+<section id="slide-org4cff2f0">
+<h3 id="org4cff2f0">Game Jam, WTH?</h3>
+<ul>
+<li>Jam Session (nix Marmelade &#x2026; eher wie Musiker)</li>
+<li>zwangloses Beisammensein von Musi^WEntwicklern</li>
+<li>Ziel ist es in Gruppen {Video,Brett,Karten}-Spiele zu erstellen</li>
+<li>die Spiele sollen klein, aber innovativ sein</li>
+<li>gemeinsam Rapid Prototyping üben und gemeinsam Erfahrung sammeln</li>
+
+</ul>
+
+</section>
+<section id="slide-org27cf5d4">
+<h3 id="org27cf5d4">Global Game Jam</h3>
+<ul>
+<li>der <b>Global Game Jam</b> ist eine weltweite Bewegung, an der sich überall
+auf der Welt verteilt Entwickler zusammen finden, um eben pro Gruppe
+ein Spiel (fertig) zu entwickeln</li>
+<li>zeitlicher Rahmen: 48h full-time rumnerden</li>
+<li>aktuell 110 Jam Sites registriert</li>
+<li>Save the date: (Fr) 20. Januar 17:00 bis (So) 22. Januar 2017</li>
+
+</ul>
+
+</section>
+<section id="slide-org0e1bb6d">
+<h3 id="org0e1bb6d">und nu?</h3>
+<ul>
+<li>naja, wir sind noch nicht dabei</li>
+<li>aber wär' doch vielleicht ganz witzig!?</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgf3083fe">
+<h2 id="orgf3083fe">Test Driven Development</h2>
+<div class="outline-text-2" id="text-orgf3083fe">
+</div></section>
+<section id="slide-org9101c9a">
+<h3 id="org9101c9a">Recap</h3>
+<ul>
+<li>Danke nochmal an Matthias!</li>
+<li>TDD hilft, weil
+<ul>
+<li>keiner von uns arbeitet fehlerfrei</li>
+<li>wir ein tieferes Verständnis über die Domäne entwickeln</li>
+<li>dabei testbarer Code entsteht</li>
+<li>wir refactorn können, ohne Angst zu haben</li>
+<li>Features sind gewährleistet ("das hat doch schon funktioniert")</li>
+
+</ul></li>
+<li>"test first", weil "later equals never"</li>
+<li>Ausreden gibt es keine :)</li>
+
+</ul>
+
+
+</section>
+<section id="slide-orge2bfd00">
+<h3 id="orge2bfd00">Arrange, Act, Assert</h3>
+<ul>
+<li>jeder Test sollte diesem Dreischritt folgen
+<ul>
+<li>Ausgangsbedingungen schaffen (Objekte instantiieren, Mocks anlegen)</li>
+<li>die zu testende Aktion durchführen</li>
+<li>das Ergebnis davon überprüfen</li>
+
+</ul></li>
+<li>daraus folgt auch, dass jeder Test nur eine Aktion/Sache testet</li>
+<li>das muss nicht heißen, dass im Test nur einmal "assert" stehen darf</li>
+
+</ul>
+
+</section>
+<section id="slide-orgc62e171">
+<h3 id="orgc62e171">Red, Green, Refactor</h3>
+<ul>
+<li>wir schreiben einen (weiteren) Test</li>
+<li>nachdem die Implementierung fehlt, müssen die Tests nun auf rot laufen!
+(Tests immer ausführen; Keyboard-Shortcuts verwenden)</li>
+<li>wenn Tests rot sind, dann (minimale) Implementierung schreiben</li>
+<li>Tests ausführen - Ziel: grün!</li>
+<li>[wenn nötig] jetzt refactorn, Redundanzen entfernen usf.</li>
+<li>dabei sollten die Tests möglichst nicht (nur kurz) rot sein</li>
+<li>anschließend Tests ausführen - Ziel: immer noch grün!</li>
+<li>wenn verlaufen: abbrechen, git reset &#x2013;hard</li>
+<li>GOTO 1</li>
+
+</ul>
+
+</section>
+<section id="slide-orgd17a544">
+<h3 id="orgd17a544">Baby Steps</h3>
+<ul>
+<li>die Idee von TDD ist in kleinen Inkrementen zu arbeiten</li>
+<li>also nur ein Test, der die Implementierung einen kleinen Schritt in die richtige Richtung treibt</li>
+<li>&#x2026; und die Implementierung dazu</li>
+<li>5 Minuten sind gut, nicht mehr als 10</li>
+<li>halbe Stunde oberflächlich Tests schreiben, eine Stunde hacken und dann 3 Stunden debuggen ist nicht TDD!</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgce5d1e2">
+<h2 id="orgce5d1e2">Challenge 1: Pig Latin (again)</h2>
+<ul>
+<li>Arbeitet in Pairs (ggf. zu dritt)</li>
+<li>Arbeitet test driven</li>
+<li>Committed nach jedem kleinen Schritt</li>
+<li>Constraint: Baby Steps</li>
+<li>Navigator achtet darauf, dass Tests spätestens nach 120 Sekunden wieder grün sind
+<ul>
+<li>sonst: git reset &#x2013;hard</li>
+<li>Iteration normal: 1 Test + Implementierung</li>
+<li>Alternativ: Refactoring</li>
+<li>danach Stoppuhr resetten und von vorn</li>
+<li>driver &amp; navigator wechseln dabei die Rollen</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+<section id="slide-org328d8e9">
+<h3 id="org328d8e9">Pig Latin, WTH?</h3>
+<ul>
+<li>(Kinder)Spiel in englischer Sprache</li>
+<li>Worte/Sätze umformen; "a yellow bird" -&gt; "aay ellowyay irdbay"</li>
+<li>Regeln:
+<ul>
+<li>Vokal am Anfang -&gt; "ay" anfügen</li>
+<li>Konsonant am Anfang zuerst nach hinten schieben, dann "ay" anfügen</li>
+<li>"ch", "qu", "th", "thr" und "sch" gelten als ein Konsonant (und werden zusammen verschoben)</li>
+<li>beliebiger Konsonant + "qu" gilt ebenfalls als Cluster und wird gemeinsam verschoben</li>
+<li>"xr" und "yt" wie Vokal behandeln</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org30f1a99">
+<h2 id="org30f1a99">Mocking</h2>
+<div class="outline-text-2" id="text-org30f1a99">
+</div></section>
+<section id="slide-org5c61c75">
+<h3 id="org5c61c75">Begrifflichkeiten</h3>
+<p>
+Beim Unit Testing sollen Abhängigkeiten durch ein Testdouble ersetzt werden, u.a.
+</p>
+
+<ul>
+<li>Dummy Object - tut gar nichts, z.B. Auffüllen von Parameterlisten</li>
+<li>Fake Object - eine echte Implementierung, die aber Abkürzungen nimmt (und deswegen nicht für Produktion taugt)</li>
+<li>Stub - dem Original nachempfunden, jedoch keine Logik, liefert vorkonfigurierte Rückgabewerte</li>
+<li>Mock - stärker ausprogrammiertes Double, die u.a. Erwartungen prüfen und stark mit dem SUT interagieren</li>
+
+</ul>
+
+<p>
+Die Grenzen sind teilweise aber verschwimmend.
+</p>
+
+</section>
+<section id="slide-org957eae9">
+<h3 id="org957eae9">Testbarer Code</h3>
+<p>
+Um in einem Test die Abhängigkeiten ersetzen zu können, muss die Implementierung das aber "unterstützen".
+Ziemlich blöd ist ein SUT, das u.a. &#x2026;
+</p>
+
+<ul>
+<li>statische Methodenaufrufe macht</li>
+<li>z.B. im Konstruktor selbst Abhängigkeiten initialisiert</li>
+<li>u.U. wenn die Methode selbst Objekte erstellt, die dann zurückgegeben werden</li>
+<li>Aufrufe von (PHP) Funktionen, die Seiteneffekte haben
+<ul>
+<li>(Bildschirm) Ein-/Ausgabe</li>
+<li>Interaktion mit dem Dateisystem</li>
+<li>Netzwerk Zugriffe usf.</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+<section id="slide-org65511a2">
+<h3 id="org65511a2">Bsp. statischer Aufruf</h3>
+<div class="org-src-container">
+
+<pre  class="src src-php"><span style="color: #0000FF;">final</span> <span style="color: #0000FF;">class</span> <span style="color: #6434A3;">CurrencyCalculator</span>
+<span style="color: #707183;">{</span>
+  <span style="color: #0000FF;">public</span> <span style="color: #0000FF;">function</span> <span style="color: #006699;">convert</span><span style="color: #7388D6;">(</span><span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">amount</span>, <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">fromCurrency</span>, <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">date</span><span style="color: #7388D6;">)</span>
+  <span style="color: #7388D6;">{</span>
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">rate</span> = <span style="color: #D0372D;">CurrencyRateService</span>::getRate<span style="color: #909183;">(</span><span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">fromCurrency</span>, <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">date</span><span style="color: #909183;">)</span>;
+    <span style="color: #0000FF;">return</span> <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">amount</span> / <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">rate</span>;
+  <span style="color: #7388D6;">}</span>
+<span style="color: #707183;">}</span>
+</pre>
+</div>
+
+<ul>
+<li>wenn CurrencyRateService hier eine API aufruft, hängt der Test von dem externen System ab</li>
+<li>der Test kann die Klasse CurrencyRateService nicht "ersetzen"</li>
+
+</ul>
+
+</section>
+<section id="slide-org745303a">
+<h3 id="org745303a">Bsp. Abhängigkeit im Konstruktor</h3>
+<div class="org-src-container">
+
+<pre  class="src src-php"><span style="color: #0000FF;">final</span> <span style="color: #0000FF;">class</span> <span style="color: #6434A3;">CurrencyCalculator</span>
+<span style="color: #707183;">{</span>
+  <span style="color: #0000FF;">private</span> <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">rateService</span>;
+
+  <span style="color: #0000FF;">public</span> <span style="color: #0000FF;">function</span> <span style="color: #006699;">__construct</span><span style="color: #7388D6;">()</span>
+  <span style="color: #7388D6;">{</span>
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #D0372D;">this</span>-&gt;<span style="color: #BA36A5;">rateService</span> = <span style="color: #0000FF;">new</span> <span style="color: #6434A3;">CurrencyRateService</span><span style="color: #909183;">()</span>;
+  <span style="color: #7388D6;">}</span>
+
+  <span style="color: #0000FF;">public</span> <span style="color: #0000FF;">function</span> <span style="color: #006699;">convert</span><span style="color: #7388D6;">(</span><span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">amount</span>, <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">fromCurrency</span>, <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">date</span><span style="color: #7388D6;">)</span>
+  <span style="color: #7388D6;">{</span>
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">rate</span> = <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #D0372D;">this</span>-&gt;<span style="color: #BA36A5;">rateService</span>-&gt;<span style="color: #333333; background-color: #FFFFFF;">getRate</span><span style="color: #909183;">(</span><span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">fromCurrency</span>, <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">date</span><span style="color: #909183;">)</span>;
+    <span style="color: #0000FF;">return</span> <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">amount</span> / <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">rate</span>;
+  <span style="color: #7388D6;">}</span>
+<span style="color: #707183;">}</span>
+</pre>
+</div>
+
+<ul>
+<li>jetzt ist zwar der statische Aufruf weg, aber helfen tut das trotzdem nicht :-)</li>
+
+</ul>
+
+</section>
+<section id="slide-org2de6295">
+<h3 id="org2de6295">besser &#x2026; Dependency Injection</h3>
+<div class="org-src-container">
+
+<pre  class="src src-php"><span style="color: #0000FF;">final</span> <span style="color: #0000FF;">class</span> <span style="color: #6434A3;">CurrencyCalculator</span>
+<span style="color: #707183;">{</span>
+  <span style="color: #0000FF;">private</span> <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">rateService</span>;
+
+  <span style="color: #0000FF;">public</span> <span style="color: #0000FF;">function</span> <span style="color: #006699;">__construct</span><span style="color: #7388D6;">(</span><span style="color: #6434A3;">CurrencyRateService</span> <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">rateService</span><span style="color: #7388D6;">)</span>
+  <span style="color: #7388D6;">{</span>
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #D0372D;">this</span>-&gt;<span style="color: #BA36A5;">rateService</span> = <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">rateService</span>;
+  <span style="color: #7388D6;">}</span>
+
+  <span style="color: #0000FF;">public</span> <span style="color: #0000FF;">function</span> <span style="color: #006699;">convert</span><span style="color: #7388D6;">(</span><span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">amount</span>, <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">fromCurrency</span>, <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">date</span><span style="color: #7388D6;">)</span>
+  <span style="color: #7388D6;">{</span>
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">rate</span> = <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #D0372D;">this</span>-&gt;<span style="color: #BA36A5;">rateService</span>-&gt;<span style="color: #333333; background-color: #FFFFFF;">getRate</span><span style="color: #909183;">(</span><span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">fromCurrency</span>, <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">date</span><span style="color: #909183;">)</span>;
+    <span style="color: #0000FF;">return</span> <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">amount</span> / <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">rate</span>;
+  <span style="color: #7388D6;">}</span>
+<span style="color: #707183;">}</span>
+</pre>
+</div>
+
+<ul>
+<li>jetzt kann man das auch testen :)</li>
+<li>wir erstellen einen Stub (oder Mock), der einen Wechselkurs liefert und wir können sehen ob convert richtig rechnet</li>
+
+</ul>
+
+</section>
+<section id="slide-org6f48613">
+<h3 id="org6f48613">Bsp. Funktionen mit Seiteneffekten</h3>
+<div class="org-src-container">
+
+<pre  class="src src-php"><span style="color: #0000FF;">final</span> <span style="color: #0000FF;">class</span> <span style="color: #6434A3;">CurrencyRateService</span>
+<span style="color: #707183;">{</span>
+  <span style="color: #0000FF;">const</span> <span style="color: #6434A3;">API_URL</span> = <span style="color: #008000;">"http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml"</span>;
+
+  <span style="color: #0000FF;">public</span> <span style="color: #0000FF;">function</span> <span style="color: #006699;">getRate</span><span style="color: #7388D6;">(</span><span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">currency</span>, <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">date</span><span style="color: #7388D6;">)</span>
+  <span style="color: #7388D6;">{</span>
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">xmlContent</span> = file_get_contents<span style="color: #909183;">(</span><span style="color: #0000FF;">static</span>::<span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">API_URL</span><span style="color: #909183;">)</span>;
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">xml</span> = simplexml_load_string<span style="color: #909183;">(</span><span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">xmlContent</span><span style="color: #909183;">)</span>;
+
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">currency</span> = addcslashes<span style="color: #909183;">(</span><span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">currency</span>, <span style="color: #008000;">"'"</span><span style="color: #909183;">)</span>;
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">date</span> = addcslashes<span style="color: #909183;">(</span><span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">date</span>, <span style="color: #008000;">"'"</span><span style="color: #909183;">)</span>;
+
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">xpath</span> = <span style="color: #008000;">"//Cube[time='</span><span style="color: #BA36A5;">$date</span><span style="color: #008000;">']/Cube[currency='</span><span style="color: #BA36A5;">$currency</span><span style="color: #008000;">']"</span>;
+    <span style="color: #0000FF;">return</span> <span style="color: #909183;">(</span><span style="color: #6434A3;">float</span><span style="color: #909183;">)</span> <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">xml</span>-&gt;<span style="color: #333333; background-color: #FFFFFF;">xpath</span><span style="color: #909183;">(</span><span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">xpath</span><span style="color: #909183;">)</span>-&gt;<span style="color: #333333; background-color: #FFFFFF;">attributes</span><span style="color: #909183;">()</span>-&gt;<span style="color: #BA36A5;">rate</span>;
+  <span style="color: #7388D6;">}</span>
+<span style="color: #707183;">}</span>
+</pre>
+</div>
+
+<ul>
+<li>zum Testen stört aber insb. das file_get_contents</li>
+<li>Lösung: HttpClient Service injecten</li>
+
+</ul>
+
+</section>
+<section id="slide-org3ce88e1">
+<h3 id="org3ce88e1">Wie bekomme ich jetzt einen Stub?</h3>
+<p>
+hängt vom Mocking Framework, bzw. Test Runner ab. In PHPUnit (u.a.) so:
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-php"><span style="color: #0000FF;">final</span> <span style="color: #0000FF;">class</span> <span style="color: #6434A3;">CurrencyCalculatorTest</span> <span style="color: #0000FF;">extends</span> <span style="color: #6434A3;">PHPUnit_Framework_TestCase</span>
+<span style="color: #707183;">{</span>
+  <span style="color: #0000FF;">public</span> <span style="color: #0000FF;">function</span> <span style="color: #006699;">test_convert</span><span style="color: #7388D6;">()</span>
+  <span style="color: #7388D6;">{</span>
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">rateService</span> = <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #D0372D;">this</span>-&gt;<span style="color: #333333; background-color: #FFFFFF;">getMock</span><span style="color: #909183;">(</span><span style="color: #D0372D;">CurrencyRateService</span>::<span style="color: #D0372D;">class</span><span style="color: #909183;">)</span>;
+    <span style="color: #8D8D84;">// </span><span style="color: #8D8D84; font-style: italic;">oder: $this-&gt;getMockBuilder(CurrencyRateService::class)-&gt;getMock();</span>
+
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">rateService</span>-&gt;<span style="color: #333333; background-color: #FFFFFF;">method</span><span style="color: #909183;">(</span><span style="color: #008000;">'getRate'</span><span style="color: #909183;">)</span>
+                -&gt;<span style="color: #333333; background-color: #FFFFFF;">willReturn</span><span style="color: #909183;">(</span><span style="color: #D0372D;">1.20</span><span style="color: #909183;">)</span>;
+
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">calculator</span> = <span style="color: #0000FF;">new</span> <span style="color: #6434A3;">CurrencyCalculator</span><span style="color: #909183;">(</span><span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">rateService</span><span style="color: #909183;">)</span>;
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">result</span> = <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">calculator</span>-&gt;<span style="color: #333333; background-color: #FFFFFF;">convert</span><span style="color: #909183;">(</span><span style="color: #D0372D;">96</span>, <span style="color: #008000;">'GBP'</span>, <span style="color: #008000;">'2016-09-25'</span><span style="color: #909183;">)</span>;
+
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #D0372D;">this</span>-&gt;<span style="color: #333333; background-color: #FFFFFF;">assertEquals</span><span style="color: #909183;">(</span><span style="color: #D0372D;">80</span>, <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">result</span><span style="color: #909183;">)</span>;
+  <span style="color: #7388D6;">}</span>
+<span style="color: #707183;">}</span>
+</pre>
+</div>
+
+</section>
+<section id="slide-orge6f67b1">
+<h3 id="orge6f67b1">oder als Mock?</h3>
+<div class="org-src-container">
+
+<pre  class="src src-php"><span style="color: #0000FF;">final</span> <span style="color: #0000FF;">class</span> <span style="color: #6434A3;">CurrencyCalculatorTest</span> <span style="color: #0000FF;">extends</span> <span style="color: #6434A3;">PHPUnit_Framework_TestCase</span>
+<span style="color: #707183;">{</span>
+  <span style="color: #0000FF;">public</span> <span style="color: #0000FF;">function</span> <span style="color: #006699;">test_convert</span><span style="color: #7388D6;">()</span>
+  <span style="color: #7388D6;">{</span>
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">rateService</span> = <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #D0372D;">this</span>-&gt;<span style="color: #333333; background-color: #FFFFFF;">getMock</span><span style="color: #909183;">(</span><span style="color: #D0372D;">CurrencyRateService</span>::<span style="color: #D0372D;">class</span><span style="color: #909183;">)</span>;
+    <span style="color: #8D8D84;">// </span><span style="color: #8D8D84; font-style: italic;">oder: $this-&gt;getMockBuilder(CurrencyRateService::class)-&gt;getMock();</span>
+
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">rateService</span>-&gt;<span style="color: #333333; background-color: #FFFFFF;">expects</span><span style="color: #909183;">(</span><span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #D0372D;">this</span>-&gt;<span style="color: #333333; background-color: #FFFFFF;">once</span><span style="color: #709870;">()</span><span style="color: #909183;">)</span>
+                -&gt;<span style="color: #333333; background-color: #FFFFFF;">method</span><span style="color: #909183;">(</span><span style="color: #008000;">'getRate'</span><span style="color: #909183;">)</span>
+                -&gt;<span style="color: #333333; background-color: #FFFFFF;">with</span><span style="color: #909183;">(</span><span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #D0372D;">this</span>-&gt;<span style="color: #333333; background-color: #FFFFFF;">equalTo</span><span style="color: #709870;">(</span><span style="color: #008000;">'GBP'</span><span style="color: #709870;">)</span>, <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #D0372D;">this</span>-&gt;<span style="color: #333333; background-color: #FFFFFF;">equalTo</span><span style="color: #709870;">(</span><span style="color: #008000;">'2016-09-25'</span><span style="color: #709870;">)</span><span style="color: #909183;">)</span>
+                -&gt;<span style="color: #333333; background-color: #FFFFFF;">willReturn</span><span style="color: #909183;">(</span><span style="color: #D0372D;">1.20</span><span style="color: #909183;">)</span>;
+
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">calculator</span> = <span style="color: #0000FF;">new</span> <span style="color: #6434A3;">CurrencyCalculator</span><span style="color: #909183;">(</span><span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">rateService</span><span style="color: #909183;">)</span>;
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">result</span> = <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">calculator</span>-&gt;<span style="color: #333333; background-color: #FFFFFF;">convert</span><span style="color: #909183;">(</span><span style="color: #D0372D;">96</span>, <span style="color: #008000;">'GBP'</span>, <span style="color: #008000;">'2016-09-25'</span><span style="color: #909183;">)</span>;
+
+    <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #D0372D;">this</span>-&gt;<span style="color: #333333; background-color: #FFFFFF;">assertEquals</span><span style="color: #909183;">(</span><span style="color: #D0372D;">80</span>, <span style="color: #333333; background-color: #FFFFFF;">$</span><span style="color: #BA36A5;">result</span><span style="color: #909183;">)</span>;
+  <span style="color: #7388D6;">}</span>
+<span style="color: #707183;">}</span>
+</pre>
+</div>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orgc67aa47">
+<h2 id="orgc67aa47">Challenge 2: Currency Calculator</h2>
+<ul>
+<li>Arbeitet wieder in Pairs (ggf. zu dritt)</li>
+<li>&#x2026; bildet möglichst andere Paare</li>
+<li>Arbeitet test driven</li>
+<li>objektorientiert</li>
+<li>Mock everything, decouple everything</li>
+
+</ul>
+
+</section>
+<section id="slide-orga0eabbd">
+<h3 id="orga0eabbd">User Story</h3>
+<ul>
+<li>kleine Command Line Applikation, die Beträge aus Fremdwährungen in Euro konvertiert</li>
+<li>Parameter: Betrag, Währungskürzel und Datum (innerhalb der letzten 90 Tage)</li>
+<li>Wechselkurse gibt's hier: <a href="http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml">http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml</a></li>
+<li>Architektur mindestens:
+<ul>
+<li>CurrencyCalculator</li>
+<li>CurrencyRateService</li>
+<li>HttpClient</li>
+
+</ul></li>
+
+</ul>
+</section>
+</section>
+</div>
+</div>
+<script src="./reveal.js/lib/js/head.min.js"></script>
+<script src="./reveal.js/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: true,
+center: true,
+slideNumber: false,
+rollingLinks: true,
+keyboard: true,
+overview: true,
+width: 1200,
+height: 800,
+margin: 0.10,
+minScale: 0.50,
+maxScale: 2.50,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: './reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: './reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: './reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>
